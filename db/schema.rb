@@ -15,6 +15,27 @@ ActiveRecord::Schema.define(version: 2021_02_15_080027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
   create_table "facts", force: :cascade do |t|
     t.string "body"
     t.integer "likes"
@@ -22,4 +43,30 @@ ActiveRecord::Schema.define(version: 2021_02_15_080027) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.string "body"
+    t.string "name"
+    t.bigint "request_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["request_id"], name: "index_messages_on_request_id"
+  end
+
+# Could not dump table "requests" because of following StandardError
+#   Unknown type 'type' for column 'request_type'
+
+  create_table "users", force: :cascade do |t|
+    t.string "firstname"
+    t.string "lastname"
+    t.string "password_digest"
+    t.string "email"
+    t.float "lat"
+    t.float "lng"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "messages", "requests"
+  add_foreign_key "requests", "users"
 end
